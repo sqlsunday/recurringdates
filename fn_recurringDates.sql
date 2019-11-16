@@ -59,7 +59,12 @@ BEGIN
 				DATEDIFF(yy, @start, @year) AS yearOrdinal,
 				--- The ordinal number of the week (first week,
 				--- second, third, ...) starting with @year.
-				DENSE_RANK() OVER (ORDER BY DATEPART(yy, [date]), NULLIF(DATEPART(isoww, [date]), 0)) AS wkOrdinal,
+
+				--DENSE_RANK() OVER (ORDER BY DATEPART(yy, [date]), NULLIF(DATEPART(isoww, [date]), 0)) AS wkOrdinal,
+				DENSE_RANK() OVER (ORDER BY (CASE WHEN DATEPART(isoww, [date])=1 AND DATEPART(mm, [date])=12
+												  THEN DATEPART(yy, [date])+1
+												  ELSE DATEPART(yy, [date]) END), NULLIF(DATEPART(isoww, [date]), 0)) AS wkOrdinal,
+
 				--- Ordinal number of the month, as of @year.
 				DENSE_RANK() OVER (ORDER BY DATEPART(yy, [date]), DATEPART(mm, [date])) AS monOrdinal,
 				--- Ordinal number of the day, as of @year.
